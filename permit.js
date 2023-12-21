@@ -138,7 +138,29 @@ async function queryPermit(options = {}){
   })
 }
 
+async function updatePermit(permitInfo){
+  console.log(permitInfo)
+  return new Promise( async (resolve,reject) => {
+    if (!permitInfo.id){
+        reject("parameter error")
+    }
+    let newValues = {
+    }
+    permitInfo.permitname ? newValues.permitname = permitInfo.permitname:null
+    permitInfo.permitlabel ? newValues.permitlabel = permitInfo.permitlabel:null
 
+    let query = {
+      where:{id:permitInfo.id}
+    }
+    try {
+      const tmpproc = await  Permit.update(newValues,query)
+      resolve(tmpproc)
+    } catch (error) {
+      console.error('Error updatePermit permit:', error);
+      reject(error)
+    }
+  })
+}
 
 
 async function findPermit(procInfo){
@@ -169,7 +191,7 @@ async function PermitNameList(){
     try {
       query={
           attributes: ['permitname'], // 只选择需要的字段
-          group: ['productname'] // 按指定字段分组
+          group: ['permitname'] // 按指定字段分组
       }
         const tmpproc = await  Permit.findAll(query)
         console.log("PermitNameList",tmpproc)
@@ -187,5 +209,6 @@ module.exports = {
   createPermit,
   queryPermit,
   deletePermit,
+  updatePermit,
   PermitNameList
 }

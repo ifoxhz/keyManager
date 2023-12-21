@@ -99,7 +99,7 @@ function deletePermitDevice(id) {
 }
 
 
-async function queryPermitDevice(options = {}){
+async function queryPermitDevice(page={},options = {}){
   console.log(options)
   return new Promise( async (resolve,reject) => {
     try {
@@ -109,13 +109,13 @@ async function queryPermitDevice(options = {}){
       //   }
       // }
       query ={
-          limit: parseInt(options.pageSize),
-          offset: parseInt(options.offset),
+          limit: parseInt(page.pageSize),
+          offset: parseInt(page.offset),
           where: {
-            permitid: parseInt(options.id)
+            ...options
           }
       }
-      console.log("QueryProduct query log",query)
+      console.log("queryPermitDevice query log",query)
       const count = await PermitDevice.count()
       const tmpproc = await  PermitDevice.findAll(query)
       resolve({count, list:tmpproc})

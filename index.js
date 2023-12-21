@@ -5,7 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const {User, verifyUser} = require("./user")
 const {Product, createProduct, queryProduct, deleteProduct} = require("./product")
-const {Permit, createPermit, queryPermit, deletePermit,PermitNameList} = require("./permit")
+const {Permit, createPermit, queryPermit, deletePermit,PermitNameList,updatePermit} = require("./permit")
 const {PermitDevice, createPermitDevice, queryPermitDevice, deletePermitDevice} = require("./permitdevice")
 
 
@@ -74,8 +74,7 @@ app.get('/server/product/get', (req, res) => {
   // 例如将数据保存到数据库或执行其他操作
 
   if (!req.session.userId){
-    res.status = 401
-    res.json("未登录")
+    res.sendStatus(401)
     return
   }else{
     console.log("product/get session",req.session.userId)
@@ -101,8 +100,7 @@ app.get('/server/product/get', (req, res) => {
   app.post('/server/product/create', (req, res) => {
 
     if (!req.session.userId){
-      res.status = 401
-      res.json("未登录")
+      res.sendStatus(401)
       return
     }else{
       console.log("product/create",req.session.userId)
@@ -135,13 +133,12 @@ app.get('/server/product/get', (req, res) => {
     })
     .catch((err) =>{
       console.log("Failed to create product with error", err)
-      res.status = 400
       if (err.name === 'SequelizeValidationError') {
         console.error('验证错误：', err.errors);
-        res.json("Parameter error")
+        res.status(400).send({ error: 'parameter wrong' })
       } else {
         console.error('其他错误：', err);
-        res.json("unknowed error")
+        res.status(400).send({error:"unknowed error"})
       }
     })
   });
@@ -257,6 +254,42 @@ app.post('/server/permit/create', (req, res) => {
   })
 });
 
+
+
+app.post('/server/permit/update', (req, res) => {
+
+  // if (!req.session.userId){
+  //   res.status = 401
+  //   res.json("未登录")
+  //   return
+  // }else{
+  //   console.log("permit/update", req.body)
+  // }
+  
+  updatePermit({
+    permitname: req.body.permitname,
+    permitlabel: req.body.permitlabel,
+    id:req.body.id
+  })
+  .then((ret) =>{
+    console.log("succeed to update permit",ret)
+    result = {Data:ret}
+    res.json(result); // 将结果以 JSON 格式发送回客户端
+  })
+  .catch((err) =>{
+    console.log("Failed to update permit with error", err)
+    res.status = 400
+    if (err.name === 'SequelizeValidationError') {
+      console.error('验证错误：', err.errors);
+      res.json("Parameter error")
+    } else {
+      console.error('其他错误：', err);
+      res.json("unknowed error")
+    }
+  })
+});
+
+
   app.post('/server/permit/delete', (req, res) => {
 
     if (!req.session.userId){
@@ -306,22 +339,27 @@ app.get('/server/permitdevice/get', (req, res) => {
   // 在这里编写处理 POST 请求的逻辑
   // 例如将数据保存到数据库或执行其他操作
 
-  if (!req.session.userId){
-    res.status = 401
-    res.json("未登录")
-    return
-  }else{
-    console.log("permitdevice/get session",req.session.userId)
-  }
+  // if (!req.session.userId){
+  //   res.status = 401
+  //   res.json("未登录")
+  //   return
+  // }else{
+  //   console.log("permitdevice/get session",req.session.userId)
+  // }
 
   console.log(req.query)
+  let page ={}
   let options = {}
-  options.pageSize = req.query.pageSize
-  options.offset = req.query.offset
-  options.id = req.query.permitid
+  page.pageSize = req.query.pageSize
+  page.offset = req.query.offset
+
+  req.query.permitname ?  options.permitname = req.query.permitname:null
+  req.query.permitstatus ?  options.permitstatus = req.query.permitstatus:null
+  req.query.deviceid ?  options.deviceid = parseInt(req.query.deviceid):null
+  req.query.productionline ?  options.productionline = req.query.productionline:null
 
   
-  queryPermitDevice(options).then((ret) =>{
+  queryPermitDevice(page,options).then((ret) =>{
     result = {Data:ret}
     res.json(result); // 将结果以 JSON 格式发送回客户端
   }).catch ((err) => {
@@ -398,7 +436,7 @@ app.post('/server/permitdevice/create', (req, res) => {
 });
 
 //读取产品分类接口
-app.get('/server/permit/namelist', (req, res) => {
+app.get('/server/permitdevice/namelist', (req, res) => {
   // 在这里编写处理 POST 请求的逻辑
   // 例如将数据保存到数据库或执行其他操作
 
