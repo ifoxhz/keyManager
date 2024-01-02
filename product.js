@@ -109,7 +109,7 @@ async function queryProduct(options = {}){
       //     id: procInfo.id
       //   }
       // }
-      query ={
+      let query ={
           limit: parseInt(options.pageSize),
           offset: parseInt(options.offset)
       }
@@ -118,7 +118,7 @@ async function queryProduct(options = {}){
       const tmpproc = await  Product.findAll(query)
       resolve({count, list:tmpproc})
     } catch (error) {
-      console.error('Error query user:', error);
+      console.error('Error query Product:', error);
       reject(error)
     }
   })

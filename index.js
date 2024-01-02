@@ -92,7 +92,7 @@ app.get('/server/product/get', (req, res) => {
   }).catch ((err) => {
     console.log("QueryProduct",err)
     res.status = 400
-    res.json("service error")
+    res.status(400).send("service error")
   })
 
 });
@@ -177,10 +177,10 @@ app.get('/server/product/get', (req, res) => {
         res.status = 400
         if (err.name === 'SequelizeValidationError') {
           console.error('验证错误：', err.errors);
-          res.json("Parameter error")
+          res.status(400).send("Parameter error")
         } else {
           console.error('其他错误：', err);
-          res.json("unknowed error")
+          res.status(400).send("unknowed error")
         }
       })
   
@@ -197,14 +197,14 @@ app.get('/server/permit/get', (req, res) => {
     res.json("未登录")
     return
   }else{
-    console.log("product/get session",req.session.userId)
+    console.log("permit/get session",req.session.userId)
   }
 
   console.log(req.query)
   let options = {}
   options.pageSize = req.query.pageSize
   options.offset = req.query.offset
-  options.id = req.query.permitProdId
+  options.id = req.query.permitProdId ?req.query.permitProdId:null
 
   
   queryPermit(options).then((ret) =>{
@@ -213,7 +213,7 @@ app.get('/server/permit/get', (req, res) => {
   }).catch ((err) => {
     console.log("queryPermit",err)
     res.status = 400
-    res.json("service error")
+    res.status(400).send("service error")
   })
 
 });
@@ -221,8 +221,7 @@ app.get('/server/permit/get', (req, res) => {
 app.post('/server/permit/create', (req, res) => {
 
   if (!req.session.userId){
-    res.status = 401
-    res.json("未登录")
+    res.sendStatus(401)
     return
   }else{
     console.log("permit/create",req.session.userId)
@@ -243,13 +242,12 @@ app.post('/server/permit/create', (req, res) => {
   })
   .catch((err) =>{
     console.log("Failed to create permit with error", err)
-    res.status = 400
     if (err.name === 'SequelizeValidationError') {
       console.error('验证错误：', err.errors);
-      res.json("Parameter error")
+      res.status(400).send("Parameter error")
     } else {
       console.error('其他错误：', err);
-      res.json("unknowed error")
+      res.status(400).send("unknowed error")
     }
   })
 });
@@ -278,13 +276,12 @@ app.post('/server/permit/update', (req, res) => {
   })
   .catch((err) =>{
     console.log("Failed to update permit with error", err)
-    res.status = 400
     if (err.name === 'SequelizeValidationError') {
       console.error('验证错误：', err.errors);
-      res.json("Parameter error")
+      res.status(400).send("Parameter error")
     } else {
       console.error('其他错误：', err);
-      res.json("unknowed error")
+      res.status(400).send("unknowed error")
     }
   })
 });
@@ -321,13 +318,12 @@ app.post('/server/permit/update', (req, res) => {
     })
     .catch((err) =>{
       console.log("Failed to delete product with error", err)
-      res.status = 400
       if (err.name === 'SequelizeValidationError') {
         console.error('验证错误：', err.errors);
-        res.json("Parameter error")
+        res.status(400).send("Parameter error")
       } else {
         console.error('其他错误：', err);
-        res.json("unknowed error")
+        res.status(400).send("unknowed error")
       }
     })
 
@@ -364,8 +360,7 @@ app.get('/server/permitdevice/get', (req, res) => {
     res.json(result); // 将结果以 JSON 格式发送回客户端
   }).catch ((err) => {
     console.log("queryPermit",err)
-    res.status = 400
-    res.json("service error")
+    res.status(400).send("service error")
   })
 
 });
@@ -373,8 +368,7 @@ app.get('/server/permitdevice/get', (req, res) => {
 app.post('/server/permitdevice/create', (req, res) => {
 
   if (!req.session.userId){
-    res.status = 401
-    res.json("未登录")
+    res.sendStatus(401)
     return
   }else{
     console.log("permit/create",req.session.userId)
@@ -396,10 +390,10 @@ app.post('/server/permitdevice/create', (req, res) => {
     res.status = 400
     if (err.name === 'SequelizeValidationError') {
       console.error('验证错误：', err.errors);
-      res.json("Parameter error")
+      res.status(400).send("Parameter error")
     } else {
       console.error('其他错误：', err);
-      res.json("unknowed error")
+      res.status(400).send("unknowed error")
     }
   })
 });
@@ -426,10 +420,10 @@ app.post('/server/permitdevice/create', (req, res) => {
       res.status = 400
       if (err.name === 'SequelizeValidationError') {
         console.error('验证错误：', err.errors);
-        res.json("Parameter error")
+        res.status(400).send("Parameter error")
       } else {
         console.error('其他错误：', err);
-        res.json("unknowed error")
+        res.status(400).send("unknowed error")
       }
     })
 
@@ -456,7 +450,7 @@ app.get('/server/permitdevice/namelist', (req, res) => {
   }).catch ((err) => {
     console.log("queryPermit",err)
     res.status = 400
-    res.json("service error")
+    res.status(400).send("service error")
   })
 
 });

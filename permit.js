@@ -120,19 +120,22 @@ async function queryPermit(options = {}){
       //     id: procInfo.id
       //   }
       // }
-      query ={
+      let query = {
           limit: parseInt(options.pageSize),
           offset: parseInt(options.offset),
-          where: {
-            permitProdId: options.id
-          }
       }
-      console.log("QueryProduct query log",query)
+
+      if(options.id){
+        query.where = {} 
+        query.where.permitProdId = parseInt(options.id)
+      }
+      
+      console.log("queryPermit query log",query)
       const count = await Permit.count()
       const tmpproc = await  Permit.findAll(query)
       resolve({count, list:tmpproc})
     } catch (error) {
-      console.error('Error query user:', error);
+      console.error('Error query Permit:', error);
       reject(error)
     }
   })

@@ -1,5 +1,7 @@
-
+const {Config} = require("./config")
 const { Sequelize,DataTypes} = require('sequelize')
+
+
 const kpssql = new Sequelize('kpsdatabase', 'root', 'yongkps', {
     host: 'localhost',
     dialect: 'mysql',
@@ -7,19 +9,31 @@ const kpssql = new Sequelize('kpsdatabase', 'root', 'yongkps', {
         freezeTableName: true
     }
 });
-
+const UserRole ={
+  ADMIN:100,
+  OPERATOR:200
+}
 
 async function CreateUserTable() {
 
-    await User.sync(); // 使用 { force: true } 可以强制重新创建表
-    console.log('Tables created!');
+    console.log(typeof Config)
+    console.log(Config)
 
-    // const newUser = await User.create({
-    //   name:"yongkps",
-    //   email:"yong@etsme.com",
-    //   password:"yongkps",
-    //   phone:"12312341234"
-    // });
+    const options = Config?.Database?.force?{force:true}:null
+
+    await User.sync(options); // 使用 { force: true } 可以强制重新创建表
+    console.log('Tables User created!',options);
+
+    if ( Config?.Database.force){
+      const newUser = await User.create({
+        name:"admin",
+        email:"admin@etsme.com",
+        password:"admin123",
+        phone:"12312341234",
+        role:UserRole.ADMIN
+      });
+  
+    }    
 
     // User.findAll().then((data) =>{
     //   console.log("user table",data)
@@ -44,8 +58,12 @@ const User = kpssql.define('User', {
     },
     phone: {
         type: DataTypes.CHAR(11),
+        allowNull: true,
+    },
+    role: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-      },
+    },
   })
 
 CreateUserTable()
@@ -98,4 +116,5 @@ async function verifyUser(userInfo){
 module.exports = {
     User,
     verifyUser,
+    UserRole
 }
